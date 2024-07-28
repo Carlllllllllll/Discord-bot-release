@@ -62,12 +62,8 @@ const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'
 
 for (const file of eventFiles) {
     const filePath = path.join(eventsPath, file);
-    const event = require(filePath);
-    if (event.once) {
-        client.once(event.name, (...args) => event.execute(...args, client));
-    } else {
-        client.on(event.name, (...args) => event.execute(...args, client));
-    }
+    const eventHandler = require(filePath);
+    eventHandler(client);
 }
 
 async function fetchExpectedCommandsCount() {
@@ -208,50 +204,31 @@ client.distube
                         url: 'https://discord.gg/xQF9f9yUEM',
                         icon_url: musicIcons.playerIcon
                     },
-                    description: `- Song name: **${song.name}** \n- Duration: **${song.formattedDuration}**\n- Requested by: ${song.user}`,
+                    description: `- Song name: **${song.name}** \n- Duration: **${song.formattedDuration}** \n- Source: **${song.source}** \n\n[Direct Link](${song.url})`,
                     image: {
-                        url: 'attachment://musicCard.png'
+                        url: `attachment://${musicCard.name}`
+                    },
+                    thumbnail: {
+                        url: musicIcons.noteIcon
                     },
                     footer: {
-                        text: 'MUSIC PLAYER - Distube',
-                        icon_url: musicIcons.footerIcon
-                    },
-                    timestamp: new Date().toISOString()
+                        text: 'Coded by KMCodes',
+                        icon_url: musicIcons.codeIcon
+                    }
                 };
 
-                await queue.textChannel.send({
-                    embeds: [embed],
-                    files: [musicCard]
-                });
+                await queue.textChannel.send({ embeds: [embed], files: [musicCard] });
             } catch (error) {
-                console.error('Error generating or sending the music card:', error);
-                queue.textChannel.send(`Now playing: **${song.name}** - **${song.formattedDuration}**`);
+                console.error('Error generating or sending music card:', error);
             }
+        } else {
+            console.warn('No text channel found in queue.');
         }
     })
-    .on('error', (channel, e) => {
-        if (channel) channel.send(`An error encountered: ${e}`);
-        else console.error(e);
+    .on('error', (channel, error) => {
+        channel.send(`An error encountered: ${error.message}`);
     });
 
-async function generateMusicCard(song) {
-    try {
-        const dynamic = new Dynamic({
-            title: song.name,
-            titleColor: 'FFFFFF',
-            description: `${song.user} - ${song.formattedDuration}`,
-            descriptionColor: '808080',
-            width: 500,
-            height: 250,
-            opacity: 0.6,
-            background: song.thumbnail,
-            borderRadius: 25
-        });
-        return await dynamic.render();
-    } catch (error) {
-        console.error('Error generating music card:', error);
-        throw error;
-    }
-}
-
-client.login(process.env.TOKEN);
+client.login(process.env.TOKEN).catch(error => {
+    console.error('Error logging in:', error);
+});
