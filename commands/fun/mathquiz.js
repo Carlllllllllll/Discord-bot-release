@@ -54,7 +54,7 @@ function startMathQuiz(interaction) {
     const embed = new EmbedBuilder()
         .setTitle('Math Quiz Started!')
         .setDescription(`What is ${num1} + ${num2}?`)
-        .setColor('RANDOM');
+        .setColor('#00FF00'); // Using a hex color value
 
     interaction.reply({ embeds: [embed] });
 }
