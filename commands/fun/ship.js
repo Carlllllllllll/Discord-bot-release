@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageAttachment, MessageEmbed } = require('discord.js');
 const Canvas = require('canvas');
-const fetch = require('node-fetch');
+const axios = require('axios');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -41,8 +41,8 @@ module.exports = {
 
         // Fetch and draw a heart in the middle
         const heartURL = 'https://clipart-library.com/images/kc8onbAzi.png'; // URL of the heart image
-        const response = await fetch(heartURL);
-        const heartBuffer = await response.buffer();
+        const response = await axios.get(heartURL, { responseType: 'arraybuffer' });
+        const heartBuffer = Buffer.from(response.data, 'binary');
         const heart = await Canvas.loadImage(heartBuffer);
         ctx.drawImage(heart, 275, 75, 150, 150);
 
