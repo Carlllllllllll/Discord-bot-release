@@ -60,6 +60,10 @@ for (const file of eventFiles) {
     }
 }
 
+// Load specific event handler for guildMemberAdd
+const guildMemberAddHandler = require('./events/guildMemberAdd');
+guildMemberAddHandler(client);
+
 async function fetchExpectedCommandsCount() {
     try {
         const response = await axios.get('http://shiva:3000/api/expected-commands-count');
@@ -220,56 +224,18 @@ client.distube
             try {
                 const embed = {
                     color: 0xDC92FF,
-                    description: `**${song.name}** \n- Duration: **${song.formattedDuration}** has been added to the queue by ${song.user}.`,
+                    description: `Added ${song.name} - \`${song.formattedDuration}\` to the queue by ${song.user}`,
+                    timestamp: new Date().toISOString(),
                     footer: {
-                        text: 'SONG ADDED',
+                        text: 'MUSIC PLAYER - Distube',
                         icon_url: musicIcons.footerIcon 
                     },
-                    timestamp: new Date().toISOString() 
                 };
-
-                queue.textChannel.send({ embeds: [embed] });
+                await queue.textChannel.send({ embeds: [embed] });
             } catch (error) {
-                console.error('Error sending song added message:', error);
+                console.error('Error sending embed:', error);
             }
         }
-    })
-    .on('error', (channel, error) => {
-        console.error(error);
-        if (channel) {
-            channel.send(`An error encountered: ${error.message}`);
-        }
-    })
-    .on('empty', queue => queue.textChannel?.send('Voice channel is empty. Leaving the channel...'))
-    .on('searchNoResult', (message, query) => message.channel.send(`No result found for ${query}!`));
-
-console.log('\x1b[35m[ MUSIC 2 ]\x1b[0m', '\x1b[32mNow Playing Feature Active ✅\x1b[0m');
-
-const generateMusicCard = async (song) => {
-    const dynamic = new Dynamic({
-        author: song.uploader.name,
-        authorURL: song.uploader.url,
-        date: new Date(),
-        image: song.thumbnail,
-        duration: song.duration,
-        url: song.url,
-        title: song.name,
-        views: song.views,
-        type: 'youtube',
     });
-
-    const buffer = await dynamic.render();
-    return buffer;
-};
-
-const checkWelcomeSetup = () => {
-    const welcomeChannelId = config.welcomeChannelId;
-
-    if (!welcomeChannelId) {
-        console.log('\x1b[33m[ WARNING ]\x1b[0m \x1b[32mNo welcome channel set up.\x1b[0m');
-    } else {
-        console.log('\x1b[36m[ WELCOME ]\x1b[0m \x1b[32mWelcome channel is set up: \x1b[0m', welcomeChannelId);
-    }
-};
 
 client.login(process.env.TOKEN);
