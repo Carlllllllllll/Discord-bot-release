@@ -40,7 +40,7 @@ module.exports = {
         ctx.drawImage(avatar2, 450, 25, 200, 200);
 
         // Fetch and draw a heart in the middle
-        const heartURL = 'https://i.imgur.com/a3RqlBl.png'; // URL of the heart image
+        const heartURL = 'https://clipart-library.com/images/kc8onbAzi.png'; // URL of the heart image
         const response = await fetch(heartURL);
         const heartBuffer = await response.buffer();
         const heart = await Canvas.loadImage(heartBuffer);
