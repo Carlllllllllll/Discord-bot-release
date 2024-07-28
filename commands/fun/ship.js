@@ -16,17 +16,21 @@ module.exports = {
         const canvas = Canvas.createCanvas(700, 250);
         const ctx = canvas.getContext('2d');
 
-        const background = await Canvas.loadImage(path.join(__dirname, 'images', 'heart.gif'));
+        // Load the heart image
+        const background = await Canvas.loadImage(path.join(__dirname, 'images', 'heart.png'));
         ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
 
+        // Load the avatars of the users
         const avatar1 = await Canvas.loadImage(user1.displayAvatarURL({ format: 'jpg' }));
         const avatar2 = await Canvas.loadImage(user2.displayAvatarURL({ format: 'jpg' }));
 
         ctx.drawImage(avatar1, 150, 25, 200, 200);
         ctx.drawImage(avatar2, 350, 25, 200, 200);
 
+        // Create the attachment
         const attachment = new AttachmentBuilder(canvas.toBuffer(), { name: 'ship.png' });
 
+        // Create the embed
         const embed = new EmbedBuilder()
             .setTitle('Shipping Result!')
             .setDescription(`${user1.username} ❤ ${user2.username}`)
