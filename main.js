@@ -199,23 +199,37 @@ client.distube
                     color: 0xDC92FF, 
                     author: {
                         name: 'Now playing', 
-                        url: 'https://discord.gg/xQF9f9yUEM',
-                        icon_url: musicIcons.playerIcon 
+                        url: 'https://discord.gg/xQFfgErup5',
+                        icon_url: musicIcons.playIcon 
                     },
-                    description: `- Song name: **${song.name}** \n- Duration: **${song.formattedDuration}**\n- Requested by: ${song.user}`,
+                    description: `**[${song.name}](${song.url})**`,
+                    thumbnail: {
+                        url: song.thumbnail 
+                    },
                     image: {
-                        url: 'attachment://musicCard.png' 
+                        url: musicCard
                     },
+                    fields: [
+                        {
+                            name: 'Views',
+                            value: song.views.toString(),
+                            inline: true
+                        },
+                        {
+                            name: 'Duration',
+                            value: song.formattedDuration,
+                            inline: true
+                        }
+                    ],
                     footer: {
-                        text: 'MUSIC PLAYER - Distube',
-                        icon_url: musicIcons.footerIcon 
-                    },
-                    timestamp: new Date().toISOString() 
+                        text: `Requested by ${song.user.tag}`,
+                        icon_url: song.user.displayAvatarURL()
+                    }
                 };
 
-                queue.textChannel.send({ embeds: [embed], files: [{ attachment: musicCard, name: 'musicCard.png' }] });
+                await queue.textChannel.send({ embeds: [embed] });
             } catch (error) {
-                console.error('Error sending music card:', error);
+                console.error('Error sending embed:', error);
             }
         }
     })
@@ -223,14 +237,14 @@ client.distube
         if (queue.textChannel) {
             try {
                 const embed = {
-                    color: 0xDC92FF,
-                    description: `Added ${song.name} - \`${song.formattedDuration}\` to the queue by ${song.user}`,
-                    timestamp: new Date().toISOString(),
+                    color: 0xFFD700, 
+                    description: `Added **[${song.name}](${song.url})** to the queue.`,
                     footer: {
-                        text: 'MUSIC PLAYER - Distube',
-                        icon_url: musicIcons.footerIcon 
-                    },
+                        text: `Requested by ${song.user.tag}`,
+                        icon_url: song.user.displayAvatarURL()
+                    }
                 };
+
                 await queue.textChannel.send({ embeds: [embed] });
             } catch (error) {
                 console.error('Error sending embed:', error);
